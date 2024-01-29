@@ -3,24 +3,43 @@ import BaseHead from '../components/Head/BaseHead.astro';
 import Nav from '../components/Nav.astro';
 import HomeHeader from '../components/HomeHeader.astro';
 import Card from '../components/Card.astro';
-import Footer from '../components/Footer/Footer.astro'
+import Footer from '../components/Footer/Footer.astro';
+import { contentfulClient } from "../lib/contentful";
+import type { BlogPost } from "../lib/contentful";
 
-interface MarkdownFrontmatter {
-  date: number;
-}
+const entries = await contentfulClient.getEntries<BlogPost>({
+  content_type: "blogPost",
+});
 
-const title = 'Creek';
+const posts = entries.items.map((item) => {
+  const { title, date, description, slug } = item.fields;
+  return {
+    title,
+    slug,
+    description,
+    date: new Date(date).toLocaleDateString()
+  };
+});
+
+// interface MarkdownFrontmatter {
+//   date: number;
+// }
+
+const title = "George's Allotment";
 const description = 'A Theme for Astro';
 const seoDescription = 'Creek is a theme for Astro static site generator';
 
-const allPosts = await Astro.glob<MarkdownFrontmatter>('./posts/*.md');
-const sortedPosts = allPosts.sort((a, b) => new Date(b.frontmatter.pubDate).valueOf() - new Date(a.frontmatter.pubDate).valueOf());
+// const allPosts = await Astro.glob<MarkdownFrontmatter>('./posts/*.md');
+ const sortedPosts = posts.sort((a, b) => new Date(b.date).valueOf() - new Date(a.date).valueOf());
 ---
 
 <html lang="en">
 
 <head>
   <BaseHead title={title} description={seoDescription} />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Londrina+Solid:wght@900&family=Poppins:ital,wght@1,400;1,600&display=swap');
+    </style>
 </head>
 
 <body class="bg-white text-black font-body leading-normal personality-casual">
