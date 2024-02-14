@@ -8,6 +8,7 @@ export interface BlogPost {
     date: EntryFieldTypes.Date,
     description: EntryFieldTypes.Text,
     slug: EntryFieldTypes.Text
+
   }
 }
 

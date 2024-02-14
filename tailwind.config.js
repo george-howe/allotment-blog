@@ -97,6 +97,11 @@ module.exports = {
       colors: {
         black: "#12151E",
         "hot-pink": "#fd2d78",
+        "dove-grey": '#78746c',
+        "bodhi-tree": '#b09471',
+        "easy-vegan": '#91a567',
+        "subtle-lemon": '#f9f4b4',
+        "essentially-bright": '#ffdd9f',
       },
       fontFamily: {
         display: ["Londrina Solid", "sans-serif"],
@@ -106,7 +111,7 @@ module.exports = {
         "7xl": "5rem",
         "8xl": "6rem",
         "9xl": "7rem",
-      },
+      }
     },
   },
   plugins: [],

@@ -2,28 +2,57 @@
 import BaseHead from '../components/Head/BaseHead.astro';
 import Nav from '../components/Nav.astro';
 import HomeHeader from '../components/HomeHeader.astro';
+import Card from '../components/Card.astro';
 import Footer from '../components/Footer/Footer.astro'
 import SearchInput from '../components/SearchInput.astro'
+import { contentfulClient } from "../lib/contentful";
+import type { BlogPost } from "../lib/contentful";
 
 let pageTitle = 'Search';
-let pageDescription = 'Search all Articles';
-let seoTitle = 'Search | Creek';
+let pageDescription = 'Search all posts';
+let seoTitle = "Search | George's Allotment";
 let seoDescription = '';
+
+const entries = await contentfulClient.getEntries<BlogPost>({
+  content_type: "blogPost",
+});
+
+const posts = entries.items.map((item) => {
+  const { title, date, description, slug, postImage, content } = item.fields;
+  return {
+    title,
+    slug,
+    description,
+    date: new Date(date).toLocaleDateString(),
+    image: postImage ? postImage.fields.file.url : 'http://placekitten.com/200/300',
+    content
+  };
+});
+
+const sortedPosts = posts.sort((a, b) => new Date(b.date).valueOf() - new Date(a.date).valueOf());
 ---
 
 <html lang="en">
   <head>
     <BaseHead title={seoTitle} description={seoDescription} />
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Londrina+Solid:wght@900&family=Poppins:ital,wght@1,400;1,600&display=swap');
+    </style>
   </head>
 
-  <body class="bg-white text-black font-body leading-normal personality-casual">
+  <body class="text-black font-body leading-normal personality-casual">
     <Nav />
-    <main class="py-12 lg:py-20">
-      <article class="max-w-6xl mx-auto px-3" content>
+    <main class="py-12 lg:py-20 bg-easy-vegan">
+      <article class="max-w-6xl mx-auto px-3 content">
         <HomeHeader title={pageTitle} description={pageDescription} />
         <SearchInput />
       </article>
     </main>
+    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 py-8 px-14 bg-bodhi-tree" data-test="articles-section">
+      {sortedPosts.map(p => <div class="col-span-1">
+        <Card post={p} />
+      </div>)}
+    </section>
     <Footer />
   </body>
 </html>

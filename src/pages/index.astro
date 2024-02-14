@@ -6,59 +6,62 @@ import Card from '../components/Card.astro';
 import Footer from '../components/Footer/Footer.astro';
 import { contentfulClient } from "../lib/contentful";
 import type { BlogPost } from "../lib/contentful";
+import BlogPost from '../components/BlogPost.astro';
 
 const entries = await contentfulClient.getEntries<BlogPost>({
   content_type: "blogPost",
 });
 
 const posts = entries.items.map((item) => {
-  const { title, date, description, slug } = item.fields;
+  const { title, date, description, slug, postImage, content } = item.fields;
   return {
     title,
     slug,
     description,
-    date: new Date(date).toLocaleDateString()
+    date: new Date(date).toLocaleDateString(),
+    image: postImage ? postImage.fields.file.url : 'http://placekitten.com/200/300',
+    content
   };
 });
 
-// interface MarkdownFrontmatter {
-//   date: number;
-// }
+const title = "Sugar Loaf Patch";
+//const description = 'A Theme for Astro';
+const seoDescription = 'An allotment blog';
 
-const title = "George's Allotment";
-const description = 'A Theme for Astro';
-const seoDescription = 'Creek is a theme for Astro static site generator';
-
-// const allPosts = await Astro.glob<MarkdownFrontmatter>('./posts/*.md');
- const sortedPosts = posts.sort((a, b) => new Date(b.date).valueOf() - new Date(a.date).valueOf());
+const sortedPosts = posts.sort((a, b) => new Date(b.date).valueOf() - new Date(a.date).valueOf());
+const latestPost = sortedPosts[0];
+sortedPosts.shift();
 ---
-
 <html lang="en">
 
 <head>
   <BaseHead title={title} description={seoDescription} />
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Londrina+Solid:wght@900&family=Poppins:ital,wght@1,400;1,600&display=swap');
-    </style>
+  </style>
 </head>
 
-<body class="bg-white text-black font-body leading-normal personality-casual">
+<body class="text-black font-body leading-normal personality-casual bg-easy-vegan">
   <Nav />
-
-  <main class="py-12 lg:py-20">
+  <HomeHeader title={title} />
+  <main class="py-12 lg:py-20 bg-easy-vegan">
     <article class="max-w-6xl mx-auto px-3">
-      <HomeHeader title={title} description={description} />
-      <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 py-8" data-test="articles-section">
-        {sortedPosts.map(p => <div class="col-span-1">
-          <Card post={p} />
-        </div>)}
-      </section>
+      
+      <!-- Latest blog goes here -->
+      <BlogPost title={latestPost.title} hero={latestPost.image} date={latestPost.date} content={latestPost.content}>
     </article>
   </main>
 
-  <section class="flex space-x-8 justify-center text-xl pt-8 font-bold">
-    <a href="/posts" class="mr-8" data-test="see-all-link">
-      See All<span class="squiggle">&rarr;</span>
+  <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 py-8 px-14 bg-bodhi-tree text-xl" data-test="articles-section">
+    <h3 class="mr-8 pt-0 pb-6 text-center font-bold text-xl">Recent Posts...</h3>
+    {sortedPosts.map(p => <div class="col-span-1">
+      <Card post={p} />
+    </div>)}
+  </section>
+
+  <section class="flex space-x-8 justify-center text-xl pt-8 font-bold bg-bodhi-tree">
+    <a href="/posts/" class="mr-8 pt-0 pb-6" data-test="see-all-link">
+      See All<span class="squiggle">&rarr;</span> 
     </a>
   </section>
 
